@@ -2,32 +2,29 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import ListAttendeeComponent from './components/ListAttendeeComponent'
+import HeaderComponent from './components/HeaderComponent'
+import FooterComponent from './components/FooterComponent'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import AttendeeComponent from './components/AttendeeComponent'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <BrowserRouter>
+       <HeaderComponent />
+        <Routes>
+            {/*// http://localhost:5173 */}
+            <Route path="/"  element = {<ListAttendeeComponent />}></Route>
+            {/*// http://localhost:5173/attendees */}
+            <Route path='/attendees' element = {<ListAttendeeComponent />}></Route>
+            <Route path='/add-attendee' element = {<AttendeeComponent />}></Route>
+            <Route path='/edit-attendee/:id' element = {<AttendeeComponent/>}></Route>
+        </Routes>
+       <FooterComponent />
+     </BrowserRouter>
     </>
   )
 }
