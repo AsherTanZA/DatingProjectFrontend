@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { createAttendee } from '../services/AttendeeService'
+import { createAttendee, updateAttendee } from '../services/AttendeeService'
 import { useNavigate, useParams} from 'react-router-dom';
 import { getAttendee} from '../services/AttendeeService'
 
@@ -41,6 +41,13 @@ const AttendeeComponent = () => {
                 .then((response) => {
                     setAttendee(response.data);
                     setHobbies(response.data.hobbies);
+                    setFirstName(response.data.firstName);
+                    setLastName(response.data.lastName);
+                    setEmail(response.data.email);
+                    setGender(response.data.gender);
+                    setloveLanguage(response.data.loveLanguage);
+                    setpersonalityType(response.data.personalityType);
+                    if (!attendee) return "Loading..."; // Handle loading state
                 })
                 .catch((error) => {
                     console.error("Error fetching attendee:", error);
@@ -62,8 +69,10 @@ const AttendeeComponent = () => {
       };
 
       // Remove a hobby
-      const removeHobby = (index: number) => {
+      const removeHobby = (e : React.MouseEvent<HTMLButtonElement>, index: number) => {
+      e.preventDefault();
       setHobbies(hobbies.filter((_, i) => i !== index));
+      console.log(hobbies);
       };
 
       function validateForm(){
@@ -105,60 +114,36 @@ const AttendeeComponent = () => {
         return valid;
       }
  
-     function saveAttendee(e : React.MouseEvent<HTMLButtonElement>){
+     function saveorUpdateAttendee(e : React.MouseEvent<HTMLButtonElement>){
         e.preventDefault();
 
         if(validateForm()){
           const attendee = {firstName, lastName, email, gender, hobbies, loveLanguage, personalityType}
           console.log(attendee);
 
-          createAttendee(attendee).then((response) => {
-          console.log(response.data);
-          navigator('/attendees');
-        })}
-     }
+          if(id){
+            updateAttendee(id, attendee).then((response) => {
+                console.log(response.data);
+                navigator('/attendees');
+            }).catch(error => {
+              console.error(error);
+            })
+          }else{
+            createAttendee(attendee).then((response) => {
+              console.log(response.data);
+              navigator('/attendees');
+            }).catch(error => {
+              console.error(error);
+            })
+          }
+        }
+      }
 
      function pageTitle(){
         if(id){
           return <h2 className='text-center'>Update Attendee</h2>
         }else{
           return <h2 className='text-center'>Add Attendee</h2>
-        }
-     }
-
-     function showAttendeetobeUpdated(data: String){
-        if (!attendee) return "Loading..."; // Handle loading state
- 
-        if(id){
-          switch (data){
-            case "firstName":
-              return attendee.firstName;
-            case "lastName":
-              return attendee.lastName;
-            case "email":
-              return attendee.email;
-            case "gender":
-              return attendee.gender;
-            case "loveLanguage":
-              return attendee.loveLanguage;
-            case "personalityType":
-              return attendee.personalityType;
-          }
-        }else{
-          switch (data){
-            case "firstName":
-              return firstName;
-            case "lastName":
-              return lastName;
-            case "email":
-              return email;
-            case "gender":
-              return gender;
-            case "loveLanguage":
-              return loveLanguage;
-            case "personalityType":
-              return personalityType;
-          }
         }
      }
 
@@ -178,7 +163,7 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder='Enter First Name'
                         name='firstName'
-                        value={showAttendeetobeUpdated("firstName")}
+                        value={firstName}
                         className={`form-control ${errors.firstName ? 'is-invalid': ''}`}
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
                       >
@@ -192,7 +177,7 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder='Enter last Name'
                         name='lastName'
-                        value={showAttendeetobeUpdated("lastName")}
+                        value={lastName}
                         className={`form-control ${errors.lastName ? 'is-invalid': ''}`}
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
                       >
@@ -206,7 +191,7 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder='Enter Email Address'
                         name='email'
-                        value={showAttendeetobeUpdated("email")}
+                        value={email}
                         className={`form-control ${errors.email ? 'is-invalid': ''}`}
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                       >
@@ -220,7 +205,7 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder="Enter gender"
                         name='gender'
-                        value={showAttendeetobeUpdated("gender")}
+                        value={gender}
                         className={`form-control ${errors.gender ? 'is-invalid': ''}`}
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setGender(e.target.value)}
                       >
@@ -245,7 +230,7 @@ const AttendeeComponent = () => {
                       <ul>
                         {hobbies.map((hobby, index) => (
                           <li key={index}>
-                            {hobby} {<button onClick={() => removeHobby(index)}>Remove</button>}
+                            {hobby} {<button onClick={(e) => removeHobby(e, index)}>Remove</button>}
                           </li>
                         ))}
                       </ul>
@@ -257,7 +242,7 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder="Enter your love language"
                         name='lovelanguage'
-                        value={showAttendeetobeUpdated("loveLanguage")}
+                        value={loveLanguage}
                         className={`form-control ${errors.loveLanguage ? 'is-invalid': ''}`}
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setloveLanguage(e.target.value)}
                       >
@@ -271,14 +256,14 @@ const AttendeeComponent = () => {
                         type='text'
                         placeholder="Enter your Personality Type"
                         name='personalityType'
-                        value={showAttendeetobeUpdated("personalityType")}
+                        value={personalityType}
                         className='form-control'
                         onChange={(e : React.ChangeEvent<HTMLInputElement>) => setpersonalityType(e.target.value)}
                       >
                       </input> 
                   </div>
 
-                  <button className='btn btn-success' onClick={saveAttendee}>Submit</button>
+                  <button className='btn btn-success' onClick={saveorUpdateAttendee}>Submit</button>
                 </form>
               </div>
           </div>

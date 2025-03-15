@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { listAttendees } from '../services/AttendeeService'
+import { deleteAttendee, listAttendees } from '../services/AttendeeService'
 import { useNavigate } from 'react-router-dom';
 
 // ✅ Define the expected API response type
@@ -22,12 +22,16 @@ const ListAttendeeComponent = () => {
     const navigator = useNavigate();
 
     useEffect(() => {
+       getAllAttendees();
+    }, [])
+
+    function getAllAttendees(){
         listAttendees().then((response) => {
             setAttendeees(response.data);
         }).catch(error => {
             console.error(error);
         })
-    }, [])
+    }
 
     function addNewAttendee(){
         navigator('/add-attendee');
@@ -35,6 +39,16 @@ const ListAttendeeComponent = () => {
 
     function updateAttendee(id: number){
         navigator(`/edit-attendee/${id}`)
+    }
+
+    function removeAttendee(id: number){
+        console.log(id);
+        deleteAttendee(id).then((response) => {
+
+        }).catch(error => {
+            console.error(error);
+        })
+
     }
     
 
@@ -68,6 +82,7 @@ const ListAttendeeComponent = () => {
                             <td>{attendee.personalityType}</td>
                             <td>
                                 <button className='btn btn-info' onClick={() => updateAttendee(attendee.id)}>Update</button>
+                                <button className='btn btn-danger' onClick={() => removeAttendee(attendee.id)} style={{marginLeft: "10px"}}>Delete</button>
                             </td>
                         </tr>
                     )

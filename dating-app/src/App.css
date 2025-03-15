@@ -52,3 +52,10 @@
   color:white;
   left: 0;
 }
+
+.card {
+  word-wrap: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
+
