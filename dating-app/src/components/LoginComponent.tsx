@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { loginAPICall, storeToken } from "../services/AuthService";
+import { loginAPICall, saveLoggedInUser, storeToken } from "../services/AuthService";
 import { useNavigate } from "react-router-dom";
 
 const LoginComponent = () => {
@@ -9,17 +9,19 @@ const LoginComponent = () => {
 
   const navigator = useNavigate();
 
-  function handleLoginForm(e : React.MouseEvent<HTMLButtonElement>){
+  async function handleLoginForm(e : React.MouseEvent<HTMLButtonElement>){
     e.preventDefault();
 
-    loginAPICall(usernameoremail, password).then((response) => {
+    await loginAPICall(usernameoremail, password).then((response) => {
         console.log(response.data);
 
         const token = 'Basic ' + window.btoa(usernameoremail + ":" +password);
         storeToken(token);
 
         setuserloginstatus("Login Successful");
+        saveLoggedInUser(usernameoremail);
         navigator("/attendees");
+        window.location.reload();
     }).catch(error => {
         console.error(error);
     })
