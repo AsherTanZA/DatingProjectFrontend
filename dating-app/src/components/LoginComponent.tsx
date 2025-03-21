@@ -15,11 +15,14 @@ const LoginComponent = () => {
     await loginAPICall(usernameoremail, password).then((response) => {
         console.log(response.data);
 
-        const token = 'Basic ' + window.btoa(usernameoremail + ":" +password);
+        //const token = 'Basic ' + window.btoa(usernameoremail + ":" +password);
+        const token = 'Bearer ' + response.data.accessToken;
+
+        const role = response.data.role;
         storeToken(token);
 
         setuserloginstatus("Login Successful");
-        saveLoggedInUser(usernameoremail);
+        saveLoggedInUser(usernameoremail, role);
         navigator("/attendees");
         window.location.reload();
     }).catch(error => {

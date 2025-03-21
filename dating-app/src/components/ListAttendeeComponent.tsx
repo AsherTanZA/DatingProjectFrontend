@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { deleteAttendee, listAttendees } from '../services/AttendeeService'
 import { useNavigate } from 'react-router-dom';
+import { isAdminUser } from '../services/AuthService';
 
 // ✅ Define the expected API response type
 interface Attendee {
@@ -13,6 +14,8 @@ interface Attendee {
     loveLanguage: string;
     personalityType: string;
   }
+
+const isAdmin = isAdminUser();
   
 
 const ListAttendeeComponent = () => {
@@ -55,7 +58,10 @@ const ListAttendeeComponent = () => {
   return (
     <div className='container'>
         <h2 className='text-center'>List of Attendees</h2>
-        <button className='btn btn-primary mb-2' onClick={addNewAttendee}> Add Attendee </button>
+        {
+            isAdmin &&
+            <button className='btn btn-primary mb-2' onClick={addNewAttendee}> Add Attendee </button>
+        }           
         <table className='table table-striped table-bordered'>
             <thead>
                 <tr>
@@ -81,8 +87,13 @@ const ListAttendeeComponent = () => {
                             <td>{attendee.loveLanguage}</td>
                             <td>{attendee.personalityType}</td>
                             <td>
-                                <button className='btn btn-info' onClick={() => updateAttendee(attendee.id)}>Update</button>
-                                <button className='btn btn-danger' onClick={() => removeAttendee(attendee.id)} style={{marginLeft: "10px"}}>Delete</button>
+                                { isAdmin &&
+                                    <button className='btn btn-info' onClick={() => updateAttendee(attendee.id)}>Update</button>
+                                }
+                                {
+                                    isAdmin &&
+                                    <button className='btn btn-danger' onClick={() => removeAttendee(attendee.id)} style={{marginLeft: "10px"}}>Delete</button>
+                                }   
                             </td>
                         </tr>
                     )

@@ -1,12 +1,31 @@
-import { NavLink } from 'react-router-dom'
-import { isUserLoggedIn, logout } from '../services/AuthService'
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { isUserLoggedIn, logout, gettheUsername } from '../services/AuthService';
 
 const HeaderComponent = () => {
 
+  const [theusername, setTheUsername] = useState<string | null>(null);
+
   const isAuth = isUserLoggedIn();
 
+  //const theusername = gettheUsername(sessionStorage.getItem("authenticatedUser"));
+
+
   const navigator = useNavigate();
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const email = sessionStorage.getItem("authenticatedUser");
+      if (email) {
+        const username = await gettheUsername(email);
+        setTheUsername(username);
+      }
+    };
+
+    if (isAuth) {
+      fetchUsername();
+    }
+  }, [isAuth]);
 
   function handleLogout(){
     logout();
@@ -18,7 +37,7 @@ const HeaderComponent = () => {
         <header>
             <nav className='navbar navbar-expand-lg navbar-dark bg-dark fixed-top'>
               <div>{isAuth &&  <a className='navbar-brand'>
-                    Ash's Dating Platform
+                    Welcome {theusername}
                 </a> }
                 {!isAuth &&  <a href='http://localhost:5173' className='navbar-brand'>
                     Ash's Dating Platform
